@@ -1,0 +1,18 @@
+{
+  "name": "kitchen-storage-planner",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Suggests where everything in a client's dry and wet kitchen should be stored, checked against the cabinet widths available.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js",
+    "build:pages": "node build-pages.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.10.0"
+  }
+}

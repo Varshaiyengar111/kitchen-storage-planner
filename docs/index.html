@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitchen Storage Planner</title>
+<style>
+  :root { --bg:#f7f6f2; --card:#fff; --ink:#22211d; --muted:#625f57; --line:#e3e0d8; --accent:#9a5b1e; --accent-ink:#fff;
+    --soft:#f3ece2; --warn-bg:#fff4e5; --warn:#8a4b00; --danger-bg:#fdecec; --danger:#9b1c1c; --free:#f1f0ec;
+    --c-drawers:#e8dccb; --c-hob:#f2cfae; --c-narrow:#dfe6d3; --c-sink:#d3e2ea; --c-appliance:#e2dde9; --c-waste:#e6e2d6; --c-pantry:#e9d9bf; --c-shelf:#ecebe6; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161513; --card:#201f1c; --ink:#ece9e2; --muted:#aaa59a; --line:#35332e; --accent:#e0a463; --accent-ink:#1b1408;
+    --soft:#2b261f; --warn-bg:#3a2a12; --warn:#ffcf8a; --danger-bg:#3d1717; --danger:#ffb3b3; --free:#26251f;
+    --c-drawers:#3a3127; --c-hob:#4a3220; --c-narrow:#2f3a28; --c-sink:#253640; --c-appliance:#332d3d; --c-waste:#35322a; --c-pantry:#433522; --c-shelf:#2c2b27; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { margin: 0 0 4px; font-size: 1.6rem; }
+  h2 { font-size: 1.1rem; margin: 0 0 8px; }
+  h3 { font-size: 1rem; margin: 18px 0 8px; }
+  p.lede { margin: 0 0 16px; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 16px; }
+  .step { display:inline-block; font-size:.8rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.04em; }
+  textarea, input, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+  textarea { width: 100%; min-height: 150px; padding: 10px; }
+  input, select { padding: 6px 8px; min-width: 0; }
+  button { font: inherit; padding: 9px 14px; border-radius: 8px; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  button.link { background: none; color: var(--muted); padding: 4px 6px; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .note { font-size: .88rem; color: var(--muted); }
+  .banner { padding: 10px 12px; border-radius: 8px; background: var(--warn-bg); color: var(--warn); font-size: .92rem; margin-top: 10px; }
+  .kitchen-edit { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+  .widths { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .widths label { font-size: .88rem; color: var(--muted); display: grid; gap: 4px; }
+  .items { display: grid; gap: 6px; margin-top: 10px; }
+  .item { display: grid; grid-template-columns: 1.1fr 1.3fr 64px 72px 32px; gap: 6px; align-items: center; }
+  .item.head { font-size: .8rem; color: var(--muted); }
+  .item .q { grid-column: 1 / -1; font-size: .82rem; color: var(--warn); margin: -2px 0 4px; }
+  @media (max-width: 620px) { .widths { grid-template-columns: 1fr; } .item { grid-template-columns: 1fr 1fr 32px; } .item .num { display: none; } .item.head { display: none; } }
+  /* Elevation: one box per base cabinet, width to scale */
+  .elev { display: flex; gap: 3px; align-items: flex-end; overflow-x: auto; padding: 4px 0 8px; }
+  .cab { border-radius: 6px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; padding: 3px; min-width: 64px; font-size: .72rem; line-height: 1.2; }
+  .cab .slot { flex: 1; border-radius: 4px; background: rgba(255,255,255,.45); padding: 3px 4px; overflow: hidden; }
+  @media (prefers-color-scheme: dark) { .cab .slot { background: rgba(0,0,0,.25); } }
+  .cab .slot.free { background: var(--free); color: var(--muted); font-style: italic; }
+  .cab .w { text-align: center; color: var(--muted); font-size: .68rem; }
+  .cab.tall { height: 240px; } .cab:not(.tall) { height: 150px; }
+  .k-drawers { background: var(--c-drawers); } .k-hob { background: var(--c-hob); } .k-narrow { background: var(--c-narrow); }
+  .k-sink { background: var(--c-sink); } .k-appliance { background: var(--c-appliance); } .k-waste { background: var(--c-waste); }
+  .k-pantry { background: var(--c-pantry); } .k-shelf { background: var(--c-shelf); }
+  .detail { border-top: 1px solid var(--line); padding: 10px 0; }
+  .detail .title { font-weight: 600; }
+  .detail .why { font-size: .88rem; color: var(--muted); }
+  .detail ul { margin: 6px 0 0; padding-left: 18px; }
+  .eg { font-size: .82rem; color: var(--muted); }
+  .list-warn li, .list-bad li { margin: 4px 0; }
+  .list-warn { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 10px 12px 10px 28px; }
+  .list-bad { background: var(--danger-bg); color: var(--danger); border-radius: 8px; padding: 10px 12px 10px 28px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; } .chip { background: var(--soft); border-radius: 999px; padding: 3px 10px; font-size: .88rem; }
+  ol.questions li { margin: 6px 0; }
+  .summary { display: flex; gap: 16px; flex-wrap: wrap; } .summary div { background: var(--soft); border-radius: 8px; padding: 8px 12px; } .summary b { font-size: 1.3rem; display: block; }
+  footer { margin-top: 24px; font-size: .85rem; color: var(--muted); }
+  @media print { #inputCard, #editCard, .row, footer, .banner { display: none !important; } body { background: #fff; } .card { border: 0; } .cab { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kitchen Storage Planner</h1>
+  <p class="lede">For kitchen designers and home owners. List what needs to be stored in the dry and wet kitchen, enter the cabinet widths you have, and get a suggested place for everything, with the reason, and the questions to ask before cabinets are made.</p>
+
+  <div class="card" id="inputCard">
+    <span class="step">Step 1 · optional</span>
+    <h2>Paste the client's notes</h2>
+    <p class="note" style="margin:0 0 8px">Rough is fine: typos, slashes, "5kg- max 20kg". The AI only tidies them into a list. It does not decide where anything goes.</p>
+    <textarea id="notes" placeholder="Dry kitchen: cutlery, pots/lids, masala storage, 3 burner hob...&#10;Wet kitchen: rice/dal/atta 20kg boxes, vegetables, 2 bin sink..."></textarea>
+    <div class="row">
+      <button id="tidy">Make item list</button>
+      <button class="secondary" id="sample">Use example kitchen</button>
+    </div>
+    <div id="mode" class="note" style="margin-top:8px"></div>
+    <div id="demoNote" class="banner" hidden>Demo mode: this is the pre-made list for the example notes. It doesn't read what you type. You can still edit the list below, and the plan updates as you change it.</div>
+    <div id="error" class="banner" hidden></div>
+  </div>
+
+  <div class="card" id="editCard" hidden>
+    <span class="step">Step 2</span>
+    <h2>Check the list and cabinet widths</h2>
+    <p class="note" style="margin:0">Widths are in millimetres, one number per base cabinet, separated by commas. Changes update the plan straight away.</p>
+    <div id="widthNote" class="banner" hidden>The example uses sample cabinet widths, not measurements. Replace them with the real ones.</div>
+    <div id="kitchens"></div>
+  </div>
+
+  <div class="card" id="out" hidden></div>
+
+  <footer>A portfolio demo. Suggestions only: a kitchen designer must confirm sizes, loads and appliance specifications before anything is made. Blum product names are given as examples of each fitting type. This project is not connected to Blum.</footer>
+</main>
+
+<script type="module">
+import { plan, TYPES, TYPE_KEYS } from "./planner.js";
+import { sampleWidths } from "./sample.js";
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// On GitHub Pages there is no server: the item list comes from the pre-made example in demo.json.
+// The storage rules still run for real in the browser. Add ?static to the address to try this mode locally.
+const STATIC = location.hostname.endsWith("github.io") || new URLSearchParams(location.search).has("static");
+const ONLINE_NOTE = "Online demo: \"Make item list\" shows the pre-made example and never uses AI. The storage plan is worked out live from whatever you enter in step 2.";
+let demoFile;
+async function api(path, body) {
+  if (STATIC) {
+    demoFile ??= await fetch("demo.json").then((r) => r.json());
+    return path === "status" ? demoFile.status : structuredClone(demoFile.run);
+  }
+  const r = await fetch("/api/" + path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : undefined);
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error);
+  return data;
+}
+
+let state = { kitchens: [] };
+let usingSample = false;
+
+const status = await api("status").catch(() => ({ live: false }));
+$("mode").textContent = STATIC ? ONLINE_NOTE
+  : status.live ? `Live AI mode (${status.model}). Your notes are sent to the AI to make the list.`
+  : "Demo mode: no API key, so \"Make item list\" shows the pre-made example list.";
+
+$("sample").onclick = () => { $("notes").value = status.sample?.notes || ""; };
+$("tidy").onclick = async () => {
+  $("error").hidden = true;
+  $("tidy").disabled = true;
+  $("tidy").textContent = "Reading the notes…";
+  try {
+    const run = await api("run", { notes: $("notes").value });
+    $("demoNote").hidden = !run.demo;
+    usingSample = run.demo;
+    state.kitchens = run.result.kitchens.map((k) => {
+      const key = k.name.startsWith("Wet") ? "wet" : "dry";
+      // The example gets sample widths. Real notes start with the same sample so the plan shows something; the user edits them.
+      return { name: k.name, ...structuredClone(sampleWidths[key]), items: k.items };
+    });
+    $("widthNote").hidden = false;
+    renderEditor();
+    update();
+    $("editCard").scrollIntoView({ behavior: "smooth" });
+  } catch (err) {
+    $("error").textContent = err.message;
+    $("error").hidden = false;
+  } finally {
+    $("tidy").disabled = false;
+    $("tidy").textContent = "Make item list";
+  }
+};
+
+const nums = (s) => String(s).split(/[^0-9]+/).map(Number).filter((n) => n > 0);
+const typeOptions = (sel) => TYPE_KEYS.map((t) => `<option value="${t}"${t === sel ? " selected" : ""}>${esc(TYPES[t].label)}</option>`).join("");
+
+function renderEditor() {
+  $("editCard").hidden = false;
+  $("kitchens").innerHTML = state.kitchens.map((k, ki) => `
+    <div class="kitchen-edit">
+      <h3 style="margin-top:0">${esc(k.name)}</h3>
+      <div class="widths">
+        <label>Base cabinet widths (mm)<input data-k="${ki}" data-f="baseWidths" value="${esc(k.baseWidths.join(", "))}"></label>
+        <label>Tall unit widths (mm)<input data-k="${ki}" data-f="tallWidths" value="${esc(k.tallWidths.join(", "))}" placeholder="none"></label>
+      </div>
+      <div class="items">
+        <div class="item head"><span>Type</span><span>Name</span><span class="num">How many</span><span class="num">kg each</span><span></span></div>
+        ${k.items.map((it, ii) => `
+          <div class="item">
+            <select data-k="${ki}" data-i="${ii}" data-f="type" aria-label="Type">${typeOptions(it.type)}</select>
+            <input data-k="${ki}" data-i="${ii}" data-f="label" value="${esc(it.label)}" aria-label="Name">
+            <input class="num" type="number" min="0" data-k="${ki}" data-i="${ii}" data-f="qty" value="${it.qty || ""}" aria-label="How many">
+            <input class="num" type="number" min="0" step="0.5" data-k="${ki}" data-i="${ii}" data-f="weightKg" value="${it.weightKg || ""}" aria-label="kg each">
+            <button class="link" data-del="${ki}:${ii}" title="Remove" aria-label="Remove ${esc(it.label)}">✕</button>
+            ${it.note ? `<div class="q">? ${esc(it.note)}</div>` : ""}
+          </div>`).join("")}
+      </div>
+      <div class="row"><button class="secondary" data-add="${ki}">+ Add item</button></div>
+    </div>`).join("");
+}
+
+$("kitchens").addEventListener("input", (e) => {
+  const { k, i, f } = e.target.dataset;
+  if (k === undefined) return;
+  const kitchen = state.kitchens[k];
+  if (i === undefined) kitchen[f] = nums(e.target.value);
+  else {
+    const it = kitchen.items[i];
+    it[f] = f === "qty" || f === "weightKg" ? Number(e.target.value) || undefined : e.target.value;
+    if (f === "type") it.label ||= TYPES[it.type].label;
+  }
+  $("widthNote").hidden = true;
+  update();
+});
+$("kitchens").addEventListener("click", (e) => {
+  const del = e.target.dataset.del, add = e.target.dataset.add;
+  if (del) { const [k, i] = del.split(":").map(Number); state.kitchens[k].items.splice(i, 1); }
+  else if (add !== undefined) state.kitchens[add].items.push({ type: "mixed", label: "" });
+  else return;
+  renderEditor();
+  update();
+});
+
+const slotLabel = { top: "Top drawer", mid: "Middle drawer", bottom: "Bottom drawer", under: "Under the sink", "pull-out": "Pull-out", "pull-outs": "Pull-outs", shelves: "Shelves" };
+
+function cabinetBox(c) {
+  const kind = c.nearHob ? "hob" : c.kind;
+  const slots = c.slots.length ? c.slots : [{ item: c.title }];
+  const head = c.nearHob ? "Hob above" : c.kind === "sink" ? "Sink" : c.kind === "waste" ? "Waste" : c.kind === "pantry" ? "Pantry" : "";
+  return `<div class="cab k-${kind}${c.tall ? " tall" : ""}" style="flex:${c.width} 0 0" title="${esc(c.title)}, ${c.width} mm">
+    ${head ? `<div class="w"><b>${head}</b></div>` : ""}
+    ${c.kind === "appliance" ? `<div class="slot">${esc(c.title)}</div>` : slots.map((s) => `<div class="slot${s.item ? "" : " free"}">${esc(s.item || (c.kind === "sink" ? "cleaning" : c.kind === "waste" ? "dry + wet bins" : "free"))}</div>`).join("")}
+    <div class="w">${c.width}</div></div>`;
+}
+
+function cabinetDetail(c) {
+  const label = c.kind === "drawers" && c.nearHob ? c.title.replace(" above", "") + ": drawers underneath" : c.title;
+  const slots = c.kind === "appliance" ? "" : `<ul>${c.slots.map((s) => `<li><b>${esc(slotLabel[s.pos] || s.pos)}:</b> ${s.item ? esc(s.item) : "<i>free</i>"}${s.fit ? ` <span class="eg">· ${esc(s.fit)}${s.eg ? `, e.g. ${esc(s.eg)}` : ""}</span>` : ""}</li>`).join("")}</ul>`;
+  return `<div class="detail"><div class="title">${esc(label)} · ${c.width} mm${c.tall ? " tall unit" : ""}</div><div class="why">${esc(c.why || "")}</div>${slots}${c.load ? `<div class="banner">${esc(c.load)}</div>` : ""}</div>`;
+}
+
+function update() {
+  const result = plan(state);
+  const placed = result.kitchens.reduce((n, k) => n + k.cabinets.flatMap((c) => c.slots).filter((s) => s.item).length, 0);
+  const unplaced = result.kitchens.reduce((n, k) => n + k.unplaced.length, 0);
+  $("out").hidden = false;
+  $("out").innerHTML = `
+    <span class="step">Step 3</span>
+    <h2>Suggested storage plan</h2>
+    <div class="summary">
+      <div><b>${placed}</b>cabinet spaces used</div>
+      <div><b>${unplaced}</b>items with no space</div>
+      <div><b>${result.questions.length}</b>questions for the client</div>
+    </div>
+    ${result.kitchens.map((k) => `
+      <h3>${esc(k.name)}</h3>
+      <p class="note" style="margin:0">Base cabinets drawn to scale, front view. Tall units are taller. The order along the wall is up to the designer.</p>
+      <div class="elev">${k.cabinets.map(cabinetBox).join("")}</div>
+      ${k.unplaced.length ? `<ul class="list-bad">${k.unplaced.map((u) => `<li><b>${esc(u.label)}</b>: ${esc(u.why)}</li>`).join("")}</ul>` : ""}
+      ${k.warnings.length ? `<ul class="list-warn">${k.warnings.map((w) => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
+      ${k.cabinets.map(cabinetDetail).join("")}
+      ${k.wall.length ? `<div class="detail"><div class="title">Upper cabinets</div><ul>${k.wall.map((w) => `<li>${esc(w.label)} <span class="eg">· ${esc(w.fit)}${w.eg ? `, e.g. ${esc(w.eg)}` : ""}</span></li>`).join("")}</ul></div>` : ""}
+      ${k.counter.length ? `<div class="detail"><div class="title">On the worktop</div><div class="chips">${k.counter.map((c) => `<span class="chip">${esc(c.label)}</span>`).join("")}</div><div class="why">${esc(k.counter[0].note)}</div></div>` : ""}
+      ${k.other.length ? `<div class="detail"><div class="title">Own space</div><ul>${k.other.map((o) => `<li>${esc(o.label)}: ${esc(o.note)}</li>`).join("")}</ul></div>` : ""}
+    `).join("")}
+    <h3>Questions to confirm before cabinets are made</h3>
+    <ol class="questions">${result.questions.map((q) => `<li>${esc(q)}</li>`).join("")}</ol>
+    <div class="row"><button class="secondary" id="copyQ">Copy questions</button><button class="secondary" onclick="print()">Print plan</button></div>`;
+  $("copyQ").onclick = async () => {
+    await navigator.clipboard.writeText(result.questions.map((q, i) => `${i + 1}. ${q}`).join("\n"));
+    $("copyQ").textContent = "Copied";
+  };
+}
+</script>
+</body>
+</html>
