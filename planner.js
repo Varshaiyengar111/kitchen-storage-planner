@@ -305,7 +305,7 @@ export function plan(input) {
       questions.unshift(`There is a sink in both kitchens. Confirm both are needed, and that "bin" in the notes means sink bowl.`);
     }
     for (const t of ["cutlery", "cutting_boards"]) {
-      if (has(0, t) && has(1, t)) questions.push(`${TYPES[t].label} appear in both kitchens. Is that two separate sets?`);
+      if (has(0, t) && has(1, t)) questions.push(`Both kitchens list ${TYPES[t].label.toLowerCase()}. Is that two separate sets?`);
     }
   }
   return { kitchens, questions: [...new Set(questions)], rules: RULES };

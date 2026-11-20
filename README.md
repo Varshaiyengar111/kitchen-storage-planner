@@ -7,7 +7,7 @@ No install needed. Click **Make item list**, then change the items or cabinet wi
 
 A small product prototype for home interiors. A client writes what they need in their dry kitchen and wet kitchen. The AI tidies those rough notes into a clean item list. Plain rules then suggest where each item should go (which drawer, pull-out, pantry or upper cabinet) and check it against the cabinet widths available. The rules also list everything that still needs the client's answer.
 
-> Portfolio demo. The example list is my own dry and wet kitchen requirements. The cabinet widths in the example are sample values, not measurements.
+> Portfolio demo. The example is my own home: my dry and wet kitchen list, and cabinet widths worked out from the kitchen's floor plan. The run lengths are measured from the drawing; how each run is split into cabinets is a suggestion.
 
 ---
 
@@ -44,6 +44,7 @@ In Indian homes with a separate dry and wet kitchen, the storage brief usually s
 **Out of scope (for now)**
 - Measuring the room, wall layout or corner units (the order along the wall is left to the designer)
 - Wall cabinet sizing
+- Corner cabinets (blind corners are left out of the widths for now)
 - Prices, quotes or ordering
 - Any real client data on the server (nothing is saved)
 
@@ -82,7 +83,7 @@ Open http://localhost:3005, click **Use example kitchen**, then **Make item list
 - **Demo mode (free):** with no key, "Make item list" shows the pre-made list for the example notes. The storage plan always runs for real.
 - **Live AI mode:** copy `.env.example` to `.env`, paste an [Anthropic API key](https://console.anthropic.com) after `ANTHROPIC_API_KEY=`, and restart. Then any notes can be turned into a list. The key stays on the server and is never sent to the browser. `.env` is in `.gitignore`, so it is never uploaded.
 
-**Tests:** `npm test` runs 11 checks on the rules. For example, pots go under the hob, a double sink is never squeezed into a narrow cabinet, and heavy items never go overhead.
+**Tests:** `npm test` runs 12 checks on the rules. For example, pots go under the hob, a double sink is never squeezed into a narrow cabinet, and heavy items never go overhead.
 
 **Online demo:** `npm run build:pages` copies the page and the rules into `docs/` for GitHub Pages. The rules run in the visitor's browser. Only the notes-to-list step uses the pre-made example.
 
@@ -106,8 +107,9 @@ Client notes ──POST /api/run──▶ server.js ──▶ Claude (structured
 
 ## What I'd do next
 
-1. **Wall order and the work triangle**: let the designer drag cabinets into order, and check fridge–sink–hob distances and landing space beside the hob.
-2. **Real container sizes**: enter the actual dabbas and boxes to size drawer heights and pantry pull-out counts, not just widths.
-3. **Hindi and regional-language notes**, since many clients describe their kitchen in their own language.
-4. **Designer feedback loop**: record which suggestions designers change, and use that to tune the rules.
-5. **Hardware catalogue as data**: swap the example fittings for any brand's catalogue, with real load ratings and sizes.
+1. **Runs instead of cabinets**: enter each counter run's length from the floor plan (for example 8'9") and let the tool split it into standard cabinets, including corner fittings.
+2. **Wall order and the work triangle**: let the designer drag cabinets into order, and check fridge–sink–hob distances and landing space beside the hob.
+3. **Real container sizes**: enter the actual dabbas and boxes to size drawer heights and pantry pull-out counts, not just widths.
+4. **Hindi and regional-language notes**, since many clients describe their kitchen in their own language.
+5. **Designer feedback loop**: record which suggestions designers change, and use that to tune the rules.
+6. **Hardware catalogue as data**: swap the example fittings for any brand's catalogue, with real load ratings and sizes.

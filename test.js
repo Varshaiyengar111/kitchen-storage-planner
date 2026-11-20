@@ -22,10 +22,17 @@ test("non-cooking items leave the hob drawers free", () => {
   assert.ok(!where(dry, "groceries").nearHob);
   assert.ok(!where(dry, "plates").nearHob);
 });
-test("bulk groceries go in the tall pantry with a load check", () => {
-  const cab = where(wet, "Rice");
+test("with no tall unit, bulk groceries go low with a heavy-duty warning", () => {
+  const slot = where(wet, "Rice").slots.find((s) => s.item.includes("Rice"));
+  assert.equal(slot.pos, "bottom");
+  assert.ok(wet.warnings.some((w) => w.includes("heavy-duty")));
+});
+test("with a tall unit, bulk groceries go in the pantry with a load check", () => {
+  const k = plan({ kitchens: [{ name: "Kitchen", baseWidths: [600], tallWidths: [600],
+    items: [{ type: "groceries_bulk", label: "Rice", qty: 5, weightKg: 20 }] }] }).kitchens[0];
+  const cab = where(k, "Rice");
   assert.equal(cab.kind, "pantry");
-  assert.match(cab.load, /20 kg/);
+  assert.match(cab.load, /100 kg.*at least 2 pull-outs/);
 });
 test("vegetables and fruit are never put under the hob", () => {
   for (const k of sample.kitchens) for (const l of ["Vegetables", "Fruit"]) assert.ok(!where(k, l)?.nearHob);

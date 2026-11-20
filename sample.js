@@ -1,5 +1,5 @@
 // The built-in example: the author's own dry and wet kitchen list, tidied.
-// Cabinet widths are SAMPLE values for the demo, not measurements.
+// Cabinet widths come from the floor plan of the same kitchen (see sampleWidths).
 
 export const sampleNotes = `Cooker, Pan, cutlery, Pots, cutting boards, masala storage, lentil storage, maja storage, mugs, ceramic plates/cups storage, cups, coffe pots
 
@@ -7,9 +7,16 @@ Dry Kitchen: Cutlery, Pots/lids, pans/lids, cutting board, masla storage, daily 
 
 Wet kitchen: big groceery boxes - rice/dal/atta 5kg- max 20kg, small grocery storage - salt/lentils/sugar/other spices 2kg, vegetable storage, fruit storage, cutting board, cutlery, coffee maker, toast maker, water heater, 3 burner hob, 2 bin sink, dish washer, dry and wet waste garbage`;
 
+// Cabinet widths worked out from the author's kitchen floor plan (feet and inches converted to mm).
+// The run lengths come from the drawing; how each run is split into cabinets is a suggestion.
+// Dry kitchen: main counter under the window, about 3150 mm usable (the far corner sits behind the oven)
+//   -> 900 + 900 + 900 + 300 + 150. Island working side 7'6" (2285 mm) -> 600 sink + 900 + 750.
+//   Tall: 600 mm oven unit. The fridge has its own 3'6" space.
+// Wet kitchen (U-shape): two short runs of 3'3" (990 mm) -> 900 each (hob, sink);
+//   long run 8'9" (2665 mm) -> 600 + 450 + 900 + 600. The outer wall is only 3' high, so no tall unit.
 export const sampleWidths = {
-  dry: { baseWidths: [900, 900, 600, 600, 600, 450, 300, 150], tallWidths: [600] },
-  wet: { baseWidths: [900, 900, 600, 450, 600, 300], tallWidths: [600] },
+  dry: { baseWidths: [900, 900, 900, 300, 150, 600, 900, 750], tallWidths: [600] },
+  wet: { baseWidths: [900, 900, 600, 450, 900, 600], tallWidths: [] },
 };
 
 // What the AI should produce from the notes above. Used in demo mode and as the AI's target format.

@@ -87,7 +87,7 @@
     <span class="step">Step 2</span>
     <h2>Check the list and cabinet widths</h2>
     <p class="note" style="margin:0">Widths are in millimetres, one number per base cabinet, separated by commas. Changes update the plan straight away.</p>
-    <div id="widthNote" class="banner" hidden>The example uses sample cabinet widths, not measurements. Replace them with the real ones.</div>
+    <div id="widthNote" class="banner" hidden></div>
     <div id="kitchens"></div>
   </div>
 
@@ -141,6 +141,9 @@ $("tidy").onclick = async () => {
       // The example gets sample widths. Real notes start with the same sample so the plan shows something; the user edits them.
       return { name: k.name, ...structuredClone(sampleWidths[key]), items: k.items };
     });
+    $("widthNote").textContent = run.demo
+      ? "These widths come from the example kitchen's floor plan. The run lengths are measured; how each run is split into cabinets is a suggestion. Corners are left out."
+      : "These widths are from the example kitchen, as a starting point. Replace them with your own.";
     $("widthNote").hidden = false;
     renderEditor();
     update();
